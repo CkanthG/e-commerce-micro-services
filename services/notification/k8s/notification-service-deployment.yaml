@@ -1,0 +1,102 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: notification-service-config-map
+  namespace: default
+data:
+  CONFIG_SERVER_HOST: "config-server"
+  MONGO_DB_HOST: "mongodb"
+  MONGO_DB_PORT: "27017"
+  DISCOVERY_SERVICE_HOST: "discovery-service"
+  ZIPKIN_HOST: "zipkin"
+  KAFKA_HOST: "kafka"
+
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: notification-service-secret
+  namespace: default
+data:
+  MONGO_DB_PASSWORD: "bGpPN053VnZtVg=="
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notification-service
+  template:
+    metadata:
+      labels:
+        app: notification-service
+    spec:
+      containers:
+        - name: notification-service
+          image: notification-service:1.0
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: log-volume
+              mountPath: /logs
+          ports:
+            - containerPort: 8006
+          env:
+            - name: CONFIG_SERVER_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: notification-service-config-map
+                  key: CONFIG_SERVER_HOST
+            - name: MONGO_DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: notification-service-config-map
+                  key: MONGO_DB_HOST
+            - name: DISCOVERY_SERVICE_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: notification-service-config-map
+                  key: DISCOVERY_SERVICE_HOST
+            - name: ZIPKIN_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: notification-service-config-map
+                  key: ZIPKIN_HOST
+            - name: KAFKA_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: notification-service-config-map
+                  key: KAFKA_HOST
+            - name: MONGO_DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: notification-service-config-map
+                  key: MONGO_DB_PORT
+            - name: MONGO_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: notification-service-secret
+                  key: MONGO_DB_PASSWORD
+
+      volumes:
+        - name: log-volume
+          emptyDir: {}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-service
+spec:
+  selector:
+    app: notification-service
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8006

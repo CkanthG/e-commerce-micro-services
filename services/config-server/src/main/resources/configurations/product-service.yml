@@ -1,0 +1,21 @@
+server:
+  port: 8003
+spring:
+  datasource:
+    url: "jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5434}/product"
+    username: ${POSTGRES_USERNAME:sreekanth}
+    password: ${POSTGRES_PASSWORD:sreekanth}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+      show-sql: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    baseline-on-migrate: true
+    enabled: true
+    baseline-description: "initialize the tables in entities db."
+    baseline-version: 0
+    user: ${spring.datasource.username}
+    password: ${spring.datasource.password}

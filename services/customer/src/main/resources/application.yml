@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: customer-service
+  config:
+    import: "optional:configserver:http://${CONFIG_SERVER_HOST:localhost}:8888"
+  zipkin:
+    base-url: "http://${ZIPKIN_HOST:localhost}:9411"  # Zipkin server URL, with default values
+    enabled: true  # Enable sending traces to Zipkin
+eureka:
+  client:
+    service-url:
+      defaultZone: http://${DISCOVERY_SERVICE_HOST}:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true

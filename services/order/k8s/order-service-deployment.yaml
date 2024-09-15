@@ -1,0 +1,114 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: order-service-config-map
+  namespace: default
+data:
+  CONFIG_SERVER_HOST: "config-server"
+  POSTGRES_HOST: "postgresql"
+  POSTGRES_PORT: "5432"
+  POSTGRES_USERNAME: "postgres"
+  DISCOVERY_SERVICE_HOST: "discovery-service"
+  ZIPKIN_HOST: "zipkin"
+  KAFKA_HOST: "kafka"
+  GATEWAY_HOST: "gateway-service"
+
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: order-service-secret
+  namespace: default
+data:
+  POSTGRES_PASSWORD: "TE9JNFEyeTA5Rg=="
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order-service
+  template:
+    metadata:
+      labels:
+        app: order-service
+    spec:
+      containers:
+        - name: order-service
+          image: order-service:1.0
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: log-volume
+              mountPath: /logs
+          ports:
+            - containerPort: 8004
+          env:
+            - name: CONFIG_SERVER_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: order-service-config-map
+                  key: CONFIG_SERVER_HOST
+            - name: POSTGRES_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: order-service-config-map
+                  key: POSTGRES_HOST
+            - name: DISCOVERY_SERVICE_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: order-service-config-map
+                  key: DISCOVERY_SERVICE_HOST
+            - name: ZIPKIN_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: order-service-config-map
+                  key: ZIPKIN_HOST
+            - name: GATEWAY_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: order-service-config-map
+                  key: GATEWAY_HOST
+            - name: KAFKA_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: order-service-config-map
+                  key: KAFKA_HOST
+            - name: POSTGRES_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: order-service-config-map
+                  key: POSTGRES_PORT
+            - name: POSTGRES_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: order-service-config-map
+                  key: POSTGRES_USERNAME
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: order-service-secret
+                  key: POSTGRES_PASSWORD
+
+      volumes:
+        - name: log-volume
+          emptyDir: {}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-service
+spec:
+  selector:
+    app: order-service
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8004

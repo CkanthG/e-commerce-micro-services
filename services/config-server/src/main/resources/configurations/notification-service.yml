@@ -1,0 +1,26 @@
+server:
+  port: 8006
+kafka:
+  payment:
+    topic: payment-topic
+  order:
+    topic: order-topic
+spring:
+  data:
+    mongodb:
+      username: root
+      password: ${MONGO_DB_PASSWORD:example}
+      host: ${MONGO_DB_HOST:localhost}
+      port: ${MONGO_DB_PORT:27018}
+      database: notifications
+      authentication-database: admin
+  kafka:
+    consumer:
+      bootstrap-servers: "${KAFKA_HOST:localhost}:9092"
+      group-id: paymentGroup,orderGroup
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: '*'
+        spring.json.type.mapping: orderConfirmation:com.sree.ecommerce.kafka.OrderConfirmation,paymentConfirmation:com.sree.ecommerce.kafka.PaymentConfirmation

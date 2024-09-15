@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    url: "jdbc:postgresql://localhost:${POSTGRES_PORT:5432}/test"
+    username: postgres
+    password: password
+    initialization-mode: always
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+  kafka:
+    producer:
+      bootstrap-servers: ${KAFKA_SERVER}
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.type.mapping: paymentConfirmation:com.sree.ecommerce.kafka.PaymentNotificationRequest
+    topic: payment-topic
+eureka:
+  client:
+    enabled: false

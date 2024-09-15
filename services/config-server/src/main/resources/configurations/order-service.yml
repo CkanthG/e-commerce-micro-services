@@ -1,0 +1,53 @@
+server:
+  port: 8004
+spring:
+  datasource:
+    url: "jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5434}/order"
+    username: ${POSTGRES_USERNAME:sreekanth}
+    password: ${POSTGRES_PASSWORD:sreekanth}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+      show-sql: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  kafka:
+    producer:
+      bootstrap-servers: "${KAFKA_HOST:localhost}:9092"
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.type.mapping: orderConfirmation:com.sree.ecommerce.kafka.OrderConfirmation
+    topic: order-topic
+
+application:
+  config:
+    customer-url: http://${GATEWAY_HOST:localhost}:8000/api/v1/customers
+    product-url: http://${GATEWAY_HOST:localhost}:8000/api/v1/products
+    payment-url: http://${GATEWAY_HOST:localhost}:8000/api/v1/payments
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      order-service:
+        registerHealthIndicator: true
+        eventConsumerBufferSize: 10
+        failureRateThreshold: 50
+        minimumNumberOfCalls: 5
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        waitDurationInOpenState: 5s
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowSize: 10
+        slidingWindowType: COUNT_BASED

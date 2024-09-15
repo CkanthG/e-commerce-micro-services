@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mail-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mail-dev
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mail-dev
+    spec:
+      containers:
+        - image: maildev/maildev
+          name: mail-dev
+          ports:
+            - containerPort: 1080
+              protocol: TCP
+            - containerPort: 1025
+              protocol: TCP
+      restartPolicy: Always
