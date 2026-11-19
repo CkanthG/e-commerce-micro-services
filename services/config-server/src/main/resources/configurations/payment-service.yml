@@ -16,7 +16,7 @@ spring:
     producer:
       bootstrap-servers: "${KAFKA_HOST:localhost}:9092"
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JacksonJsonSerializer
       properties:
         spring.json.type.mapping: paymentConfirmation:com.sree.ecommerce.kafka.PaymentNotificationRequest
     topic: payment-topic
