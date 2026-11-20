@@ -3,8 +3,8 @@
 ---
 ### **Below Tech Stacks Used**
 ```
-Java 21
-SpringBoot 3.3.2
+Java 25
+SpringBoot 4.1.0
 PostgreSQL
 MongoDB
 Keycloak
