@@ -4,7 +4,7 @@
 |---|---|
 | **Repository** | `github.com/CkanthG/e-commerce-micro-services` |
 | **Describes** | Branch `develop` as of 16 Nov 2026 (Boot 3.5.15 / Spring Cloud 2025.0.3) |
-| **Target** | Spring Boot **4.1.x** (latest patch, 4.1.2 at the time of writing) + Spring Cloud **2025.1.3** ("Oakwood"), Java 21 |
+| **Target** | Spring Boot **4.1.x** (latest patch, 4.1.2 at the time of writing) + Spring Cloud **2025.1.3** ("Oakwood"), Java 25 |
 | **Related** | ADR-0001 (Boot 3.3.2 → 3.5, phase 1). This document is the architecture basis for phase 2, which ADR-0001 announces as ADR-0002 |
 | **Last updated** | 16 Nov 2026 |
 | **Status** | Proposed. |
@@ -53,7 +53,7 @@ A small e-commerce backend made of eight Spring services:
 |---|---|---|
 | Spring Boot | **4.1.x**, latest patch | Spring Framework 7.0, Spring Security 7.1, Spring Data 2026.0, Spring Kafka 4.1, Hibernate 7.4, Jackson 3.1, Testcontainers 2.0, Flyway 12, MongoDB driver 5.8 (versions as shipped in 4.1.0) |
 | Spring Cloud | **2025.1.3** | Cloud projects are on 5.0.x (Gateway 5.0.3, Config 5.0.5, OpenFeign 5.0.3). Resilience4j 2.3 via Spring Cloud Circuit Breaker |
-| Java | **21** (unchanged) | Boot 4.1 supports Java 17 and newer. No reason to change the language level in the same step |
+| Java | **25** | Boot 4.1 supports Java 17 and newer |
 | Build | Maven, **one root parent POM** for versions (introduced in phase 1) | The Boot version is set once in `<parent>`, the Cloud version once in `<spring-cloud.version>` |
 | Data stores | PostgreSQL (order, payment, product), MongoDB (customer, notification) | Schemas are not changed by this migration |
 | Messaging | Kafka in **KRaft** mode (Confluent 8.x image, ZooKeeper removed) | Already required by the current `cp-kafka:latest`; must be finished in phase 1 (R9) |
